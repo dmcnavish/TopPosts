@@ -433,60 +433,6 @@ def addRedit():
 			logging.debug("no reddit posts found for url")
 	return posts
 
-########################################################################
-# read in any digg sites
-# TODO: combine with above reddit method
-########################################################################	
-def addDigg():
-	posts = []
-	sites = open('digg.in')
-	for orig_url in sites.read().splitlines():
-		log('digg url: ' + orig_url)
-		#new_url = buildYQLJsonUrl(orig_url)
-		site_posts = getDiggData(orig_url)
-		if site_posts != None and len(site_posts) > 0:
-			#log("reddit posts: " + str(site_posts))
-			posts.extend( site_posts )
-		else:
-			logging.debug("no digg posts found for url")
-	return posts
-	
-########################################################################
-# read in any digg sites and parse out the first few posts and
-# then check their fb/twitter count
-########################################################################
-def getDiggData(new_url):
-	posts = []
-	try:
-		log('invoking digg')
-		data = urllib2.urlopen(new_url, timeout=60).read()
-		jsondata = simplejson.loads(data)
-		#since there are so many, lets just pull out the first 5
-		i = 0
-		rmax = 5
-		while i < rmax and i < len(jsondata['stories']):
-			title = jsondata['stories'][i]['title']
-			url = jsondata['stories'][i]['url']
-			url = formatLink(url)
-			t_count = getTwitterCount(url)
-			
-			postExists = False
-			for p in posts:
-				if title not in p.title:	
-					postExists = True
-					break
-			if postExists == False:
-				posts.append(Site(new_url, title, url, t_count))
-			else:
-				rmax+=1
-			
-			#posts.append(Site(new_url, title, url, t_count))
-			i+= 1
-		return posts
-	except Exception, error:
-		logging.error('error invoking digg: ' + str(error))
-		#return getRedditData(orig_url, retry+1)	
-
 
 ########################################################################
 # Iterate over the posts and create a single string, then email it
@@ -552,8 +498,6 @@ def aggregateNews():
 
 	#add any redit posts to the list
 	posts.extend(addRedit())	
-	#add any digg posts
-	posts.extend(addDigg())
 	
 	start = 0
 	stop = 10
