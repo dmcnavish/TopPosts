@@ -7,9 +7,21 @@ threadsafe: false
 handlers:
 - url: /cron
   script: mynewsagg.py
+  login: admin
+  auth_fail_action: unauthorized
 
 - url: /assets
   static_dir: assets
+
+- url: /worker
+  script: mynewsagg.py
+  login: admin
+  auth_fail_action: unauthorized
+
+- url: /deleteposts/*
+  script: mynewsagg.py
+  login: admin
+  auth_fail_action: unauthorized  
 
 #- url: /mainui
 #  script: mainui.py
