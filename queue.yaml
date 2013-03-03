@@ -1,0 +1,3 @@
+queue:
+ - name: aggworker
+   rate: 1/s

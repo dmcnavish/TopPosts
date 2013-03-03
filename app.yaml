@@ -1,0 +1,19 @@
+application: mynewsagg
+version: 18
+runtime: python27
+api_version: 1
+threadsafe: false
+
+handlers:
+- url: /cron
+  script: mynewsagg.py
+
+- url: /assets
+  static_dir: assets
+
+#- url: /mainui
+#  script: mainui.py
+
+- url: /.*
+  script: mynewsagg.app
+

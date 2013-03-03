@@ -1,0 +1,15 @@
+indexes:
+- kind: Post
+  properties:
+  - name: t_count
+    direction: desc
+  - name: fb_count
+    direction: desc
+
+- kind: Post
+  properties:
+  - name: t_count
+    direction: desc
+  - name: fb_count
+    direction: desc
+  - name: current_ts

@@ -1,0 +1,6 @@
+cron:
+- description: daily news job
+  url: /cron
+  schedule: every day 07:00
+  timezone: America/New_York
+  target: version-18

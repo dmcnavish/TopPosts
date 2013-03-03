@@ -1,0 +1,15 @@
+{% for post in posts %}	
+<div id='singlepost'>
+	<header>
+		<span class='buttons' id="remove_post">Close</span>
+		<h2><a id='posturl' href="{{ post.url }}"> {{ post.title }}</a></h2> 
+		<p>via <a href="http://{{post.feed}}">{{post.feed}}</a></p>
+	</header>
+	<section>						
+		<p id='content'><blockquote>{{ post.content|escape|safe }}</blockquote></p>
+	</section>
+	<footer>
+		<span class='buttons' id="showComments">Add Comments</span>
+	</footer>
+</div>
+{% endfor %}

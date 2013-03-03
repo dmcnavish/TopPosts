@@ -1,0 +1,215 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>TopPosts</title>
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<meta name="viewport" content="width=device-width">
+
+	<link rel="stylesheet" href="/assets/style.css">
+	<script type="text/javascript" src="/assets/jquery.min1.7.1.js"></script>
+
+</head>
+<body>
+<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+
+	<!-- added to support fb comments -->
+	<div id="fb-root"></div>
+	<script src="http://connect.facebook.net/en_US/all.js#appId=224287964265938&amp;xfbml=1"></script>
+	<!-- end fb comment support -->
+
+	<div id="header-container">
+		<header class="wrapper clearfix">
+			<h1 id="title">TopPosts</h1>
+			<nav>
+				<ul>
+					<li><a href="http://mynewsagg.appspot.com/assets/aboutme.html">About</a></li>
+					<li><a href="http://mynewsagg.appspot.com/assets/projects.html">Projects</a></li>
+				</ul>
+			</nav>
+		</header>
+		
+	</div>
+	<div id="main-container">
+		<div id="main" class="wrapper clearfix">
+			<article id='title_header' class='viewingDate'>
+				<header>
+					<h3 id='view_date'></h3>
+				</header>
+			</article>
+			<article class='post_section'>
+			{% for post in posts %}	
+			<div id='singlepost'>
+				<header>
+					<span class='buttons' id="remove_post">Close</span>
+					<h2><a id='posturl' href="{{ post.url }}"> {{ post.title }}</a></h2> 
+					<p>via <a href="http://{{post.feed}}">{{post.feed}}</a></p>
+				</header>
+				<section>						
+					<p id='content'><blockquote>{{ post.content|escape|safe }}</blockquote></p>
+				</section>
+				<footer>
+					<span class='buttons' id="showComments">Add Comments</span>
+				</footer>
+			</div>
+			{% endfor %}
+			</article>
+	
+			<article>
+				<div id='no_posts'>
+				<section>
+					<p>Sorry there are no posts for this day</p>
+				</section>
+				</div>
+			<article>
+
+			<nav id='bottom_nav'>
+				<ul>
+					<li class='buttons' id="get_more">More</li>
+					<li class='buttons' id="get_previous">Older</li>
+					<li class='buttons' id="get_next">Newer</li>
+				</ul>
+			</nav>
+		</div> <!-- #main -->
+	</div> <!-- #main-container -->
+
+	<div id="footer-container">
+		<footer class="wrapper">
+			<p id='todaysQuote'>{{ quote|linebreaks }}</p>
+		</footer>
+	</div>
+
+<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>-->
+
+<!--<script>window.jQuery || document.write('<script src="js/libs/jquery-1.7.2.min.js"><\/script>')</script>-->
+
+<script>
+
+	/*var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+
+	(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+
+	g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+
+	s.parentNode.insertBefore(g,s)}(document,'script'));
+	*/
+	currentIdx = 10;
+			
+		$(document).ready(function(){
+			init();
+			
+			$('#main-container').on("click","a", function(){
+				window.open(this.href);
+				return false;
+			});
+			
+			$('#main-container').on("click","#remove_post", function(){
+				$(this).parent().parent().remove();
+			});
+			
+			$('footer').on("click",'#showComments',function(){
+				url = $(this).parent().parent().find('#posturl').attr('href') ;
+				commentBox = '<div class="fb-comments" data-href="' + url + '" data-num-posts="2" data-width="470"></div>'
+				$(this).parent().append(commentBox);
+				FB.XFBML.parse();
+				$(this).hide();
+			});
+
+			$('#get_more').click(function(){
+				//idx = $("#s_post:last-child").index();	
+				getPosts();
+			}); //end get_more
+			
+			$('#get_previous').click(function(){		
+				hr_offset = hr_offset + 24
+				$('.post_section').empty();
+				currentIdx = 0;
+				getPosts();
+				
+				$('#get_next').show();
+				
+				viewDate = getDate(hr_offset);
+				$('#view_date').text('Check out the top posts for ' + viewDate);
+			});
+			
+			$('#get_next').click(function(){	
+				hr_offset = hr_offset - 24
+				$('.post_section').empty();
+				currentIdx = 0;
+				getPosts();
+				
+				if(hr_offset == 0){
+					$('#get_next').hide()
+				}
+
+				viewDate = getDate(hr_offset);
+				$('#view_date').text('Check out the top posts for ' + viewDate);
+			});
+
+		}); //end jquery
+		
+		function init(){
+			$('#get_next').hide();
+			hr_offset = 0
+			$('#view_date').text('Check out top posts for today');
+			FB.XFBML.parse();
+		}
+		
+		function getDate(offset){
+			offset -= 24
+			d = new Date();
+			startTime = d.getTime()
+			offsetDay = (offset / 24)+1;
+			startTime = startTime - (offsetDay * 86400000)
+			nd = new Date(startTime);
+			day = nd.getDate();
+			month = nd.getMonth() + 1;
+			year = nd.getFullYear();
+			
+			return month + "/" + day + "/" + year;
+		}
+		
+		function getPosts(){
+			$("#loading").show();
+			
+			idx = currentIdx;
+			if(idx <0) idx = 0; 
+			
+			$.ajax({
+					type: "GET",
+					url: "/displayposts/" + idx + "/" + hr_offset,
+					success: function(data){
+						if(data != '\n' && data != ''){
+							$(".post_section").append(data);
+							FB.XFBML.parse();
+							//$('html, body').animate({ scrollTop: $("#all_posts #s_post:nth-child("+idx+")").offset().top}, 1000);
+							$('#no_posts').hide();
+							$('#get_more').show();
+						}
+						else{
+							$('#get_more').hide();
+							current_idx = $("#s_post:last-child").index();	
+							if(current_idx <= 0){
+								$('#no_posts').text('Sorry there are no posts for this day.').show()
+							}
+							else{
+								$('#no_posts').text('Sorry there are no more posts for this day.').show()									
+							}
+							
+						}
+					}
+				});	
+			currentIdx+=10;
+			$("#loading").hide(1000);
+		}
+
+</script>
+
+
+
+</body>
+</html>
