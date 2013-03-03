@@ -8,7 +8,7 @@ handlers:
 - url: /cron
   script: mynewsagg.py
   login: admin
-  auth_fail_action: unauthorized
+  auth_fail_action: redirect
 
 - url: /assets
   static_dir: assets
@@ -16,12 +16,12 @@ handlers:
 - url: /worker
   script: mynewsagg.py
   login: admin
-  auth_fail_action: unauthorized
+  auth_fail_action: redirect
 
 - url: /deleteposts/*
   script: mynewsagg.py
   login: admin
-  auth_fail_action: unauthorized  
+  auth_fail_action: redirect  
 
 #- url: /mainui
 #  script: mainui.py
