@@ -500,15 +500,15 @@ def aggregateNews():
 	posts.extend(addRedit())	
 	
 	start = 0
-	stop = 10
+	stop = 5
 	allposts = posts
 	posts = []
 
 	try:	
 		while start < len(allposts):
 			posts.extend( retreiveFBStats(allposts[start:stop]) )
-			stop+=10
-			start+=10
+			stop+=5
+			start+=5
 	except Exception, error:
 		logging.error('error processing retrieveFBStats' + str(error))
 	

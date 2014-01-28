@@ -113,9 +113,15 @@
 			
 			$('footer').on("click",'#showComments',function(){
 				url = $(this).parent().parent().find('#posturl').attr('href') ;
-				commentBox = '<div class="fb-comments" data-href="' + url + '" data-num-posts="2" data-width="470"></div>'
-				$(this).parent().append(commentBox);
-				FB.XFBML.parse();
+				if(FB){
+					commentBox = '<div class="fb-comments" data-href="' + url + '" data-num-posts="2" data-width="470"></div>'
+					$(this).parent().append(commentBox);
+					FB.XFBML.parse();
+				}
+				else{
+					commentBox = '<div class="fb-comments" data-href="' + url + '" data-num-posts="2" data-width="470"><span>Sorry, we use Facebook for comments and your network blocks Facebook.</span></div>'
+					$(this).parent().append(commentBox);
+				}
 				$(this).hide();
 			});
 
@@ -156,7 +162,7 @@
 			$('#get_next').hide();
 			hr_offset = 0
 			$('#view_date').text('Check out top posts for today');
-			FB.XFBML.parse();
+			if(FB) FB.XFBML.parse();
 		}
 		
 		function getDate(offset){
@@ -185,7 +191,7 @@
 					success: function(data){
 						if(data != '\n' && data != ''){
 							$(".post_section").append(data);
-							FB.XFBML.parse();
+							if(FB) FB.XFBML.parse();
 							//$('html, body').animate({ scrollTop: $("#all_posts #s_post:nth-child("+idx+")").offset().top}, 1000);
 							$('#no_posts').hide();
 							$('#get_more').show();
